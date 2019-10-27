@@ -30,11 +30,11 @@ public class Earthquake {
         return mId;
     }
 
-    public Date getmDate() {
+    public Date getMDate() {
         return mDate;
     }
 
-    public String getmDetails() {
+    public String getMDetails() {
         return mDetails;
     }
 
@@ -42,7 +42,7 @@ public class Earthquake {
         return location;
     }
 
-    public double getmMagnitude() {
+    public double getMMagnitude() {
         return mMagnitude;
     }
 

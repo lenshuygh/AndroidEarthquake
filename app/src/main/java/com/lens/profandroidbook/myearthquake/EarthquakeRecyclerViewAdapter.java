@@ -9,10 +9,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.lens.profandroidbook.myearthquake.databinding.ListItemEarthquakeBinding;
+
+import org.w3c.dom.Text;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class EarthquakeRecyclerViewAdapter extends RecyclerView.Adapter<EarthquakeRecyclerViewAdapter.ViewHolder> {
     private final List<Earthquake> mEarthQuakes;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.US);
+    private static final NumberFormat MAGNITUDE_FORMAT = new DecimalFormat("0.0");
 
     public EarthquakeRecyclerViewAdapter(List<Earthquake> earthQuakes) {
         this.mEarthQuakes = earthQuakes;
@@ -21,15 +31,22 @@ public class EarthquakeRecyclerViewAdapter extends RecyclerView.Adapter<Earthqua
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_earthquake,parent,false);
-        return new ViewHolder(view);
+        /*View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_earthquake,parent,false);
+        return new ViewHolder(view);*/
+        ListItemEarthquakeBinding binding = ListItemEarthquakeBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.earthquake = mEarthQuakes.get(position);
-        holder.detailsView.setText(mEarthQuakes.get(position).toString());
+        Earthquake earthquake = mEarthQuakes.get(position);
 
+        /*holder.date.setText(DATE_FORMAT.format(earthquake.getMDate()));
+        holder.details.setText(earthquake.getMDetails());
+        holder.magnitude.setText(MAGNITUDE_FORMAT.format(earthquake.getMMagnitude()));*/
+
+        holder.binding.setEarthquake(earthquake);
+        holder.binding.executePendingBindings();
     }
 
     @Override
@@ -38,19 +55,32 @@ public class EarthquakeRecyclerViewAdapter extends RecyclerView.Adapter<Earthqua
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        public final View parentView;
-        public final TextView detailsView;
-        public Earthquake earthquake;
+        public final ListItemEarthquakeBinding binding;
 
-        public ViewHolder(@NonNull View view) {
-            super(view);
-            parentView = view;
-            detailsView = view.findViewById(R.id.list_item_earthquake_details);
+
+
+        /*public final TextView date;
+        public final TextView details;
+        public final TextView magnitude;*/
+
+
+
+        public ViewHolder(ListItemEarthquakeBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            binding.setDateformat(DATE_FORMAT);
+            binding.setMagnitudeformat(MAGNITUDE_FORMAT);
+            /*super(view);
+
+            date = view.findViewById(R.id.date);
+            details = view.findViewById(R.id.details);
+            magnitude = view.findViewById(R.id.magnitude);*/
+
         }
 
-        @Override
+        /*@Override
         public String toString() {
-            return super.toString() + " '" + detailsView.getText() + "'";
-        }
+            return super.toString() + " '" + details.getText() + "'";
+        }*/
     }
 }

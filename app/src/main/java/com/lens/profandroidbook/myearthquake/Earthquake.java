@@ -60,9 +60,9 @@ public class Earthquake {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if(obj instanceof Earthquake){
-            return ((Earthquake)obj).getmId().contentEquals(mId);
-        }else {
+        if (obj instanceof Earthquake) {
+            return ((Earthquake) obj).getmId().contentEquals(mId);
+        } else {
             return false;
         }
     }

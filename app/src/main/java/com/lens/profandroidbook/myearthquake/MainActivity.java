@@ -24,20 +24,20 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
             mEarthQuakeListFragment = new EarthquakeListFragment();
-            fragmentTransaction.add(R.id.main_activity_frame,mEarthQuakeListFragment,TAG_LIST_FRAGMENT);
+            fragmentTransaction.add(R.id.main_activity_frame, mEarthQuakeListFragment, TAG_LIST_FRAGMENT);
             fragmentTransaction.commitNow();
-        }else {
+        } else {
             mEarthQuakeListFragment = (EarthquakeListFragment) fragmentManager.findFragmentByTag(TAG_LIST_FRAGMENT);
         }
 
         Date now = Calendar.getInstance().getTime();
         List<Earthquake> dummyQuakes = new ArrayList<>(0);
-        dummyQuakes.add(new Earthquake("0",now,"San Jose",null,7.0,null));
-        dummyQuakes.add(new Earthquake("1",now,"LA",null,6.5,null));
+        dummyQuakes.add(new Earthquake("0", now, "San Jose", null, 7.0, null));
+        dummyQuakes.add(new Earthquake("1", now, "LA", null, 6.5, null));
 
         mEarthQuakeListFragment.setmEartquakes(dummyQuakes);
 

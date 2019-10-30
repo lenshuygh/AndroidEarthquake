@@ -32,8 +32,8 @@ public class EarthquakeListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_earthquake_list,container,false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        View view = inflater.inflate(R.layout.fragment_earthquake_list, container, false);
+        recyclerView = view.findViewById(R.id.list);
         return view;
     }
 
@@ -46,11 +46,11 @@ public class EarthquakeListFragment extends Fragment {
         recyclerView.setAdapter(earthquakeRecyclerViewAdapter);
     }
 
-    public void setmEartquakes(List<Earthquake> eartquakes){
-        for (Earthquake eartquake : eartquakes) {
-            if(!mEartquakes.contains(eartquake)){
-                mEartquakes.add(eartquake);
-                earthquakeRecyclerViewAdapter.notifyItemInserted(mEartquakes.indexOf(eartquake));
+    public void setmEartquakes(List<Earthquake> earthquakes) {
+        for (Earthquake earthquake : earthquakes) {
+            if (!mEartquakes.contains(earthquake)) {
+                mEartquakes.add(earthquake);
+                earthquakeRecyclerViewAdapter.notifyItemInserted(mEartquakes.indexOf(earthquake));
             }
         }
     }

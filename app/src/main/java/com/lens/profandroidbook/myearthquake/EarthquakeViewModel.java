@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.provider.DocumentsContract;
 import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
@@ -97,7 +96,7 @@ public class EarthquakeViewModel extends AndroidViewModel {
                                 String linkString = hostnameString + linkElement.getAttribute("href");
                                 String pointString = gElement.getFirstChild().getNodeValue();
                                 String dtString = whenElement.getFirstChild().getNodeValue();
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy'T'hh:mm:ss:SSS'Z'");
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss:SSS'Z'");
                                 Date date = new GregorianCalendar(0, 0, 0).getTime();
                                 try {
                                     date = simpleDateFormat.parse(dtString);

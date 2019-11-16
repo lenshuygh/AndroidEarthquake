@@ -2,6 +2,7 @@ package com.lens.profandroidbook.myearthquake;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -50,7 +51,7 @@ public class EarthquakeViewModel extends AndroidViewModel {
     }
 
     @SuppressLint("StaticFieldLeak")
-    private void loadEarthquakes() {
+    public void loadEarthquakes() {
         new AsyncTask<Void, Void, List<Earthquake>>() {
             @Override
             protected List<Earthquake> doInBackground(Void... voids) {

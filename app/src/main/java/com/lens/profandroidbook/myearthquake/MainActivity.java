@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EarthquakeListFragment.OnListFragmentInteractionListener {
 
     private static final String TAG_LIST_FRAGMENT = "TAG_LIST_FRAGMENT";
 
@@ -34,5 +34,14 @@ public class MainActivity extends AppCompatActivity {
 
     earthquakeViewModel = ViewModelProviders.of(this).get(EarthquakeViewModel.class);
 
+    }
+
+    @Override
+    public void onListFragmentRefreshRequested(){
+        updateEarthQuakes();
+    }
+
+    private void updateEarthQuakes() {
+        earthquakeViewModel.loadEarthquakes();
     }
 }

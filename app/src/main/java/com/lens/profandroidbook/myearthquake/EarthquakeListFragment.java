@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ public class EarthquakeListFragment extends Fragment {
     private EarthquakeRecyclerViewAdapter earthquakeRecyclerViewAdapter = new EarthquakeRecyclerViewAdapter(mEartquakes);
 
     protected EarthquakeViewModel earthquakeViewModel;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public EarthquakeListFragment() {
     }
@@ -38,6 +41,7 @@ public class EarthquakeListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_earthquake_list, container, false);
         recyclerView = view.findViewById(R.id.list);
+        swipeRefreshLayout = view.findViewById(R.id.swiperefresh);
         return view;
     }
 
@@ -45,18 +49,31 @@ public class EarthquakeListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //set recycler view adapter
         Context context = view.getContext();
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(earthquakeRecyclerViewAdapter);
+
+        // setup swipe to refresh view
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updateEarthquakes();
+            }
+        });
     }
 
     public void setmEartquakes(List<Earthquake> earthquakes) {
+        /*mEartquakes.clear();
+        earthquakeRecyclerViewAdapter.notifyDataSetChanged();*/
+
         for (Earthquake earthquake : earthquakes) {
             if (!mEartquakes.contains(earthquake)) {
                 mEartquakes.add(earthquake);
                 earthquakeRecyclerViewAdapter.notifyItemInserted(mEartquakes.indexOf(earthquake));
             }
         }
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -74,5 +91,29 @@ public class EarthquakeListFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+    public interface OnListFragmentInteractionListener{
+        void onListFragmentRefreshRequested();
+    }
+
+    private OnListFragmentInteractionListener onListFragmentInteractionListener;
+
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        onListFragmentInteractionListener = (OnListFragmentInteractionListener) context;
+    }
+
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        onListFragmentInteractionListener = null;
+    }
+
+    protected void updateEarthquakes(){
+        if(onListFragmentInteractionListener != null){
+            onListFragmentInteractionListener.onListFragmentRefreshRequested();
+        }
     }
 }

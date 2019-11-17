@@ -1,6 +1,7 @@
 package com.lens.profandroidbook.myearthquake;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -27,6 +29,8 @@ public class EarthquakeListFragment extends Fragment {
     protected EarthquakeViewModel earthquakeViewModel;
 
     private SwipeRefreshLayout swipeRefreshLayout;
+
+    private int mMinimumMagnitude = 0;
 
     public EarthquakeListFragment() {
     }
@@ -64,15 +68,26 @@ public class EarthquakeListFragment extends Fragment {
     }
 
     public void setmEartquakes(List<Earthquake> earthquakes) {
-        /*mEartquakes.clear();
-        earthquakeRecyclerViewAdapter.notifyDataSetChanged();*/
+        updateFromPreferences();
 
         for (Earthquake earthquake : earthquakes) {
-            if (!mEartquakes.contains(earthquake)) {
-                mEartquakes.add(earthquake);
-                earthquakeRecyclerViewAdapter.notifyItemInserted(mEartquakes.indexOf(earthquake));
+            if (earthquake.getMMagnitude() >= mMinimumMagnitude) {
+                if (!mEartquakes.contains(earthquake)) {
+                    mEartquakes.add(earthquake);
+                    earthquakeRecyclerViewAdapter.notifyItemInserted(mEartquakes.indexOf(earthquake));
+                }
             }
         }
+
+        if (mEartquakes != null && mEartquakes.size() > 0) {
+            for (int i = mEartquakes.size() - 1; i >= 0; i--) {
+                if (mEartquakes.get(i).getMMagnitude() < mMinimumMagnitude) {
+                    mEartquakes.remove(i);
+                    earthquakeRecyclerViewAdapter.notifyItemRemoved(i);
+                }
+            }
+        }
+
         swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -86,34 +101,56 @@ public class EarthquakeListFragment extends Fragment {
                 .observe(getViewLifecycleOwner(), new Observer<List<Earthquake>>() {
                     @Override
                     public void onChanged(List<Earthquake> earthquakes) {
-                        if(earthquakes != null){
+                        if (earthquakes != null) {
                             setmEartquakes(earthquakes);
                         }
                     }
                 });
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(getContext());
+        prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
     }
 
-    public interface OnListFragmentInteractionListener{
+    private SharedPreferences.OnSharedPreferenceChangeListener mPrefListener
+            = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (PreferencesActivity.PREF_MIN_MAG.equals(key)) {
+                List<Earthquake> earthquakes
+                        = earthquakeViewModel.getEarthquakes().getValue();
+                if (earthquakes != null)
+                    setmEartquakes(earthquakes);
+            }
+        }
+    };
+
+
+    public interface OnListFragmentInteractionListener {
         void onListFragmentRefreshRequested();
     }
 
     private OnListFragmentInteractionListener onListFragmentInteractionListener;
 
     @Override
-    public void onAttach(Context context){
+    public void onAttach(Context context) {
         super.onAttach(context);
         onListFragmentInteractionListener = (OnListFragmentInteractionListener) context;
     }
 
     @Override
-    public void onDetach(){
+    public void onDetach() {
         super.onDetach();
         onListFragmentInteractionListener = null;
     }
 
-    protected void updateEarthquakes(){
-        if(onListFragmentInteractionListener != null){
+    protected void updateEarthquakes() {
+        if (onListFragmentInteractionListener != null) {
             onListFragmentInteractionListener.onListFragmentRefreshRequested();
         }
+    }
+
+    private void updateFromPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mMinimumMagnitude = Integer.parseInt(sharedPreferences.getString(PreferencesActivity.PREF_MIN_MAG, "3"));
     }
 }

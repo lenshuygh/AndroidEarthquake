@@ -36,7 +36,9 @@ import javax.xml.parsers.ParserConfigurationException;
 public class EarthquakeViewModel extends AndroidViewModel {
     private static final String TAG = "EarthquakeUpdate";
 
-    private MutableLiveData<List<Earthquake>> earthquakes;
+    //private MutableLiveData<List<Earthquake>> earthquakes;
+
+    private LiveData<List<Earthquake>> earthquakes;
 
     public EarthquakeViewModel(Application application) {
         super(application);
@@ -44,7 +46,13 @@ public class EarthquakeViewModel extends AndroidViewModel {
 
     public LiveData<List<Earthquake>> getEarthquakes() {
         if (earthquakes == null) {
-            earthquakes = new MutableLiveData<>();
+            //earthquakes = new MutableLiveData<>();
+            earthquakes =
+                    EarthquakeDatabaseAccessor
+                            .getInstance(getApplication())
+                            .earthquakeDao()
+                            .loadAllEarthQuakes();
+
             loadEarthquakes();
         }
         return earthquakes;
@@ -126,24 +134,31 @@ public class EarthquakeViewModel extends AndroidViewModel {
                         }
                     }
                     httpURLConnection.disconnect();
-                } catch (MalformedURLException e){
-                    Log.e(TAG,"Malformed URL Exception",e);
+                } catch (MalformedURLException e) {
+                    Log.e(TAG, "Malformed URL Exception", e);
                 } catch (IOException e) {
-                    Log.e(TAG,"IOException",e);
+                    Log.e(TAG, "IOException", e);
                 } catch (ParserConfigurationException e) {
-                    Log.e(TAG,"Parser ConfigurationException,e");
+                    Log.e(TAG, "Parser ConfigurationException,e");
                 } catch (SAXException e) {
-                    Log.e(TAG,"SAXException",e);
+                    Log.e(TAG, "SAXException", e);
                 }
+
+
+                //insert newly parsed array into the DB
+                EarthquakeDatabaseAccessor
+                        .getInstance(getApplication())
+                        .earthquakeDao()
+                        .insertEarthquakes(earthquakes);
+
                 return earthquakes;
             }
 
             @Override
             protected void onPostExecute(List<Earthquake> data) {
-                earthquakes.setValue(data);
+                //data will not be directly applied to LiveData field now but the Mutable Live Data will be replaced by a DB query
+                //earthquakes.setValue(data);
             }
         }.execute();
     }
-
-
 }

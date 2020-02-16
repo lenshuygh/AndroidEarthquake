@@ -23,6 +23,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <service android:name=".EarthQuakeUpdateJobsService"
+            android:exported="true">
+            <intent-filter>
+                <action
+                    android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

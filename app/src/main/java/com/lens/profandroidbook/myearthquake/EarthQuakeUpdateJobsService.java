@@ -1,10 +1,18 @@
 package com.lens.profandroidbook.myearthquake;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -31,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,6 +49,9 @@ public class EarthQuakeUpdateJobsService extends SimpleJobService {
     private static final String TAG = "EarthquakeUpdateJob";
     private static final String UPDATE_JOB_TAG = "update_job";
     private static final String PERIODIC_JOB_TAG = "periodic_job";
+
+    private static final String NOTIFICATION_CHANNEL = "earthquake";
+    public static final int NOTIFICATION_ID = 1;
 
     public static void scheduleUpdateJob(Context context) {
         FirebaseJobDispatcher jobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
@@ -52,7 +64,7 @@ public class EarthQuakeUpdateJobsService extends SimpleJobService {
     }
 
     @Override
-    public int onRunJob(JobParameters job) {
+    public int onRunJob(final JobParameters job) {
 
         ArrayList<Earthquake> earthquakes = new ArrayList<>(0);
 
@@ -122,6 +134,16 @@ public class EarthQuakeUpdateJobsService extends SimpleJobService {
             }
             httpURLConnection.disconnect();
 
+            if(job.getTag().equals(PERIODIC_JOB_TAG)){
+                Earthquake largestNewEarthquake = findLargestNewEarthquake(earthquakes);
+
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                int minimumMagnitude = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_MIN_MAG,"3"));
+
+                if(largestNewEarthquake != null || largestNewEarthquake.getMagnitude() >= minimumMagnitude){
+                    broadcastNotification(largestNewEarthquake);
+                }
+            }
             //insert newly parsed array into the DB
             EarthquakeDatabaseAccessor
                     .getInstance(getApplication())
@@ -145,6 +167,8 @@ public class EarthQuakeUpdateJobsService extends SimpleJobService {
             Log.e(TAG, "SAXException", e);
             return RESULT_FAIL_NORETRY;
         }
+
+
     }
 
     private void scheduleNextUpdate(Context context, JobParameters job) {
@@ -171,4 +195,72 @@ public class EarthQuakeUpdateJobsService extends SimpleJobService {
             }
         }
     }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.earthquake_channel_name);
+
+            NotificationChannel channel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL,
+                    name,
+                    NotificationManager.IMPORTANCE_HIGH);
+            channel.enableVibration(true);
+            channel.enableLights(true);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void broadcastNotification(Earthquake earthquake) {
+        createNotificationChannel();
+
+        Intent startActivityIntent = new Intent(this
+                , MainActivity.class);
+
+        PendingIntent launchIntent = PendingIntent.getActivity(this, 0, startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        final NotificationCompat.Builder earthQuakeNotificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL);
+
+        earthQuakeNotificationBuilder
+                .setSmallIcon(R.drawable.notification_icon)
+                .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentIntent(launchIntent)
+                .setAutoCancel(true)
+                .setShowWhen(true);
+
+        earthQuakeNotificationBuilder
+                .setWhen(earthquake.getDate().getTime())
+                .setContentTitle("M:" + earthquake.getMagnitude())
+                .setContentText(earthquake.getDetails())
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(earthquake.getDetails()));
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+
+        notificationManagerCompat.notify(NOTIFICATION_ID, earthQuakeNotificationBuilder.build());
+    }
+
+    private Earthquake findLargestNewEarthquake(List<Earthquake> newEarthquakes) {
+        List<Earthquake> earthquakes =
+                EarthquakeDatabaseAccessor
+                        .getInstance(getApplicationContext())
+                        .earthquakeDao()
+                        .loadAllEarthquakesBlocking();
+
+        Earthquake largestNewEarthquake = null;
+
+        for(Earthquake earthquake : newEarthquakes){
+            if(earthquakes.contains(earthquake)){
+                continue;
+            }
+            if(largestNewEarthquake == null || earthquake.getMagnitude() > largestNewEarthquake.getMagnitude()){
+                largestNewEarthquake = earthquake;
+            }
+        }
+        return largestNewEarthquake;
+    }
+
 }

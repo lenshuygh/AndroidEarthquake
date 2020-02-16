@@ -23,4 +23,7 @@ public interface EarthquakeDao {
     @Query("SELECT * FROM earthquake ORDER BY date DESC")
     public LiveData<List<Earthquake>> loadAllEarthQuakes();
 
+    @Query("SELECT * FROM earthquake ORDER BY date DESC")
+    List<Earthquake> loadAllEarthquakesBlocking();
+
 }

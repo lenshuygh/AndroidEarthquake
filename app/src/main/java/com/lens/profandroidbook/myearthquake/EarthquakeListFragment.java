@@ -71,7 +71,7 @@ public class EarthquakeListFragment extends Fragment {
         updateFromPreferences();
 
         for (Earthquake earthquake : earthquakes) {
-            if (earthquake.getMMagnitude() >= mMinimumMagnitude) {
+            if (earthquake.getMagnitude() >= mMinimumMagnitude) {
                 if (!mEartquakes.contains(earthquake)) {
                     mEartquakes.add(earthquake);
                     earthquakeRecyclerViewAdapter.notifyItemInserted(mEartquakes.indexOf(earthquake));
@@ -81,7 +81,7 @@ public class EarthquakeListFragment extends Fragment {
 
         if (mEartquakes != null && mEartquakes.size() > 0) {
             for (int i = mEartquakes.size() - 1; i >= 0; i--) {
-                if (mEartquakes.get(i).getMMagnitude() < mMinimumMagnitude) {
+                if (mEartquakes.get(i).getMagnitude() < mMinimumMagnitude) {
                     mEartquakes.remove(i);
                     earthquakeRecyclerViewAdapter.notifyItemRemoved(i);
                 }

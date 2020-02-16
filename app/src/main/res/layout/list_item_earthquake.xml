@@ -35,7 +35,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textAppearance="?attr/textAppearanceListItem"
-            android:text="@{magnitudeformat.format(earthquake.mMagnitude)}"/>
+            android:text="@{magnitudeformat.format(earthquake.magnitude)}"/>
 
         <TextView
             android:id="@+id/date"
@@ -45,7 +45,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/magnitude"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="@{dateformat.format(earthquake.mDate)}"/>
+            android:text="@{dateformat.format(earthquake.date)}"/>
 
         <TextView
             android:id="@+id/details"
@@ -56,6 +56,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/magnitude"
             app:layout_constraintTop_toBottomOf="@id/date"
-            android:text="@{earthquake.mDetails}"/>
+            android:text="@{earthquake.details}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

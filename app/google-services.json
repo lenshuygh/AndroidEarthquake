@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "20895001627",
+    "firebase_url": "https://myearthquake-38246.firebaseio.com",
+    "project_id": "myearthquake-38246",
+    "storage_bucket": "myearthquake-38246.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20895001627:android:82ee818b76d22ac2b85cbe",
+        "android_client_info": {
+          "package_name": "com.lens.profandroidbook.myearthquake"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "20895001627-cvh7i6prng4tj9ad4obm1st18jd82b26.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lens.profandroidbook.myearthquake",
+            "certificate_hash": "37ed01ce234d4d5304d2c63d968effb574c2583e"
+          }
+        },
+        {
+          "client_id": "20895001627-ll3htoodv8usemt3h2565mnhdgi1ffm5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcO5iNWOUwDYHmFsLfaHi5Uidg8NBCFK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "20895001627-ll3htoodv8usemt3h2565mnhdgi1ffm5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -20,7 +20,7 @@ public interface EarthquakeDao {
     @Delete
     public void deleteEarthquake(Earthquake earthquake);
 
-    @Query("SELECT * FROM earthquake ORDER BY mDate DESC")
+    @Query("SELECT * FROM earthquake ORDER BY date DESC")
     public LiveData<List<Earthquake>> loadAllEarthQuakes();
 
 }
